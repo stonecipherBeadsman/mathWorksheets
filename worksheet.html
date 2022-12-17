@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+table {
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+td, th {
+  border: none;
+  text-align: center;
+  padding: 10px;
+}
+
+tr:nth-child(even) {
+  background-color: #dddddd;
+}
+</style>
+</head>
+<body>
+
+<table style='width:100%' id='table'>
+</table>
+
+</body>
+<script>
+	function createWorksheet(type, numberOfProblems, difficulty){
+		var question = {};
+		var questions = [];
+		var table = [];
+		var row = [];
+		for (var i = 0; i < numberOfProblems; i++) {
+			if (type === 'multiplication') {
+				question = createMultiplicationProblem(difficulty);
+			} else if (type === 'division'){
+				question = createDivisionProblem(difficulty);
+			} else if (type === 'addition'){
+				question = createAdditionProblem(difficulty);
+			} else if (type === 'subtraction'){
+				question = createSubtractionProblem(difficulty);
+			} else if (type === 'by tens'){
+				question = createByTensProblem(difficulty);
+			} else if (type === 'plus tens'){
+				question = createPlusTensProblem(difficulty);
+			} else if (type === 'minus tens'){
+				question = createMinusTensProblem(difficulty);
+			} else if(type === 'place value'){
+				question = creatPlaceValueProblems(difficulty);
+			} else {
+				throw 'Check the type, numberOfProblems, and difficulty that you passes in.\nOne of them is invalid!';
+			}
+			questions.push(question);
+		    // console.log('r.a.\n' + question.result.split('').reverse().join(''), '\n');
+		    console.log(question.problem,
+		    	question.result);
+			if(i == numberOfProblems - 1){
+				createTable(questions);
+			}
+		}
+	}
+
+	function createMultiplicationProblem(difficulty){
+		var multiplier = Math.floor((Math.pow(10, difficulty) + Math.random() * (Math.pow(10, difficulty) * 9)));
+		var multiplicand = Math.floor((Math.pow(10, difficulty) + Math.random() * (Math.pow(10, difficulty) * 9)));
+		var product = multiplier * multiplicand + '';
+		var symbol = 'x';
+		var equals = getEqualsLength(difficulty);
+		var question = {};
+		question.problem = '  ' + multiplier + '\n' + symbol + ' ' + multiplicand + '\n' + equals + '\n'.repeat(difficulty + 1); 
+		question.result = String(product);
+		return question;
+	}	
+
+	function createDivisionProblem(difficulty){
+		// this method of scaling difficulty is not quite right for division
+		var divisor = Math.floor((Math.pow(10, difficulty) + Math.random() * (Math.pow(10, difficulty) * 9)));
+		var dividend = divisor * Math.ceil(Math.random() * Math.pow(10, difficulty));
+		var quotient = dividend / divisor
+		var question = {};
+		question.problem = divisor + '⟌' + dividend;
+		question.result = quotient;
+		return question;
+	}
+
+	function createAdditionProblem(difficulty){
+		var term1 = Math.floor((Math.pow(10, difficulty) + Math.random() * (Math.pow(10, difficulty) * 9)));
+		var term2 = Math.floor((Math.pow(10, difficulty) + Math.random() * (Math.pow(10, difficulty) * 9)));
+		var sum = term1 + term2;
+		var symbol = '+';
+		var equals = getEqualsLength(difficulty);
+		var question = {};
+		question.problem = '  ' + term1 + '\n' + symbol + ' ' + term2 + '\n' + equals + '\n'.repeat(difficulty + 1); 
+		question.result = String(sum);
+		return question;
+	}
+
+	function createSubtractionProblem(difficulty){
+		var minuend = Math.floor((Math.pow(10, difficulty) + Math.random() * (Math.pow(10, difficulty) * 9)));
+		// need to make sure that this is smaller than minuend
+		var subtrahend = createSubtrahend(minuend, difficulty);
+		var difference = minuend - subtrahend;
+		var symbol = '-';
+		var equals = getEqualsLength(difficulty);
+		var question = {};
+		question.problem = '  ' + minuend + '\n' + symbol + ' ' + subtrahend + '\n' + equals + '\n'.repeat(difficulty + 1); 
+		question.result = String(difference);
+		return question;
+	}
+
+	function createByTensProblem(difficulty){
+		var term1 =  Math.floor((Math.pow(10, difficulty) + Math.random() * (Math.pow(10, difficulty) * 9)) + 10);
+		var term2 = 10;
+		var sum = term1 + term2;
+		var difference = term1 - term2;
+		var spaces = term1 < 100 ? '  ' : ' ';
+		var symbol = {
+			'sum': '+',
+			'difference': '-'
+		};
+		var equals = getEqualsLength(difficulty);
+		var question = {};
+		
+		if (Math.random() > 0.5 ? true : false){
+			//sum
+			question.problem = spaces + term1 + '\n' + symbol.sum + ' ' + term2 + '\n' + equals + '\n'.repeat(difficulty + 1); 
+			question.result = String(sum);
+		} else {
+			//diff
+			question.problem = spaces + term1 + '\n' + symbol.difference + ' ' + term2 + '\n' + equals + '\n'.repeat(difficulty + 1); 
+			question.result = String(difference);		
+		}
+		return question;
+	}
+
+	function createPlusTensProblem(difficulty){
+		var term1 =  Math.floor((Math.pow(10, difficulty) + Math.random() * (Math.pow(10, difficulty) * 9)));
+		var term2 = 10;
+		var sum = term1 + term2;
+		var spaces = term1 < 100 ? '  ' : ' ';
+		var symbol = {
+			'sum': '+'
+		};
+		var equals = getEqualsLength(difficulty);
+		var question = {};
+		
+		//sum
+		question.problem = spaces + term1 + '\n' + symbol.sum + ' ' + term2 + '\n' + equals + '\n'.repeat(difficulty + 1); 
+		question.result = String(sum);
+		
+		return question;
+	}
+
+	function createMinusTensProblem(difficulty){
+		var minuend = Math.floor((Math.pow(10, difficulty) + Math.random() * (Math.pow(10, difficulty) * 9)) + 10);
+		// need to make sure that this is smaller than minuend
+		var subtrahend = 10;
+		var difference = minuend - subtrahend;
+		var symbol = '-';
+		var equals = getEqualsLength(difficulty);
+		var question = {};
+		question.problem = '  ' + minuend + '\n' + symbol + ' ' + subtrahend + '\n' + equals + '\n'.repeat(difficulty + 1); 
+		question.result = String(difference);
+		return question;
+	}
+	
+
+	function creatPlaceValueProblems(difficulty){
+		var number =  Math.floor((Math.pow(10, difficulty) + Math.random() * (Math.pow(10, difficulty) * 9)));	
+		number = String(number);
+		var instructions = '';
+		var deciderValue = Math.random();
+		var question = {};
+
+		if (parseInt(number) < 10){
+			instructions = 'Circle the Ones Place';
+			question.result = number[number.length-1];
+		} else if (parseInt(number) >= 10 && parseInt(number) < 100){
+			if (deciderValue >= 0 && deciderValue < 0.5){
+				instructions = 'Circle the Ones Place';
+				question.result = number[number.length-1];
+			} else {
+				instructions = 'Circle the Tens Place';
+				question.result = number[number.length-2];
+			}
+		} else if(parseInt(number) >= 100 && parseInt(number) < 1000){
+			if (deciderValue >= 0 && deciderValue < 0.33){
+				instructions = 'Circle the Ones Place';
+				question.result = number[number.length-1];
+			} else if (deciderValue >= 0.33 && deciderValue < 0.66){
+				instructions = 'Circle the Tens Place';
+				question.result = number[number.length-2];
+			} else {
+				instructions = 'Circle the Hundreds Place';
+				question.result = number[number.length-3];
+			}		
+		} else if(parseInt(number) >= 1000){
+			if (deciderValue >= 0 && deciderValue < 0.25){
+				instructions = 'Circle the Ones Place';
+				question.result = number[number.length-1];
+			} else if (deciderValue >= 0.25 && deciderValue < 0.50){
+				instructions = 'Circle the Tens Place';
+				question.result = number[number.length-2];
+			} else if (deciderValue >= 0.50 && deciderValue < 0.75){
+				instructions = 'Circle the Hundreds Place';
+				question.result = number[number.length-3];
+			} else {
+				instructions = 'Circle the Thousands Place';
+				question.result = number[number.length-4];
+			}
+		} else {
+				throw 'deciderValue ' + deciderValue + ' is messing up stuff.\n' + 'or maybe its number ' + number;
+		}
+
+		question.problem = instructions + '\n' + number;
+		return question;
+	}
+
+	function getEqualsLength(lengthOfSymbol){
+		symbol = '-';
+		return symbol.repeat(lengthOfSymbol + 3);
+	}
+
+	function createTable(questions) {
+	    var table = document.createElement('TABLE');  //makes a table element for the page
+	    table.id = 'table';
+	    var problemsAddedToRow = 0;
+	    var itemsPerRow = 3
+	    for(var numberOfRows = 0; numberOfRows <= questions.length / itemsPerRow; numberOfRows++){
+	    	var row = createRow(numberOfRows);
+	    	for(var problemsPerRow = 0; problemsPerRow < itemsPerRow; problemsPerRow++){
+	    		if(problemsAddedToRow < questions.length){
+		    		var cell = createCell(questions[problemsAddedToRow].problem);
+		    		row.appendChild(cell);
+		    		problemsAddedToRow++;
+		    	}
+	    	}
+	    	table.appendChild(row);
+	    }
+	    document.body.append(table);
+	}
+
+	function createRow(rowNumber){
+		var row = document.createElement('tr');
+	    row.id = rowNumber;
+	    return row;
+	}
+
+	function createCell(cellText){
+		var cell = document.createElement('td');
+		var pre = createPre(cellText);
+		cell.appendChild(pre);
+		return cell;
+	}
+
+	function createPre(preText){
+		var pre = document.createElement('pre');
+		pre.innerHTML = preText;
+		return pre;
+	}
+
+	function createSubtrahend(minuend, difficulty){
+		for (var i = 0; i <= i + 1; i++) {
+			var subtrahend = Math.floor((Math.pow(10, difficulty) + Math.random() * (Math.pow(10, difficulty) * 9)));
+			if (subtrahend <= minuend){
+				return subtrahend;
+			}
+		}
+	}
+
+	// createWorksheet('place value', 3, 0);
+	// createWorksheet('by tens', 9, 0);
+	// createWorksheet('place value', 3, 1);
+	// createWorksheet('by tens', 9, 1);
+	// createWorksheet('place value', 9, 2);
+
+	// createWorksheet('division', 3, 1);
+
+	createWorksheet('plus tens', 18, 0);
+	createWorksheet('minus tens', 9, 0);
+	// createWorksheet('by tens', 9, 1);
+	// createWorksheet('addition', 6, 2);
+	// createWorksheet('subtraction', 6, 2);
+
+	// createWorksheet('multiplication', 3, 1);
+
+</script>
+</html>
